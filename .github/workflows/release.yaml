@@ -24,9 +24,34 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Require signing secrets
+        env:
+          DISTRIBUTION_CERTIFICATE: ${{ secrets.DISTRIBUTION_CERTIFICATE }}
+          DISTRIBUTION_CERTIFICATE_PASSWORD: ${{ secrets.DISTRIBUTION_CERTIFICATE_PASSWORD }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
+        run: |
+          missing=0
+          for name in DISTRIBUTION_CERTIFICATE DISTRIBUTION_CERTIFICATE_PASSWORD APPLE_ID APPLE_TEAM_ID APPLE_APP_SPECIFIC_PASSWORD; do
+            eval "value=\${$name}"
+            if [ -z "$value" ]; then
+              echo "Missing secret: $name"
+              missing=1
+            fi
+          done
+          if [ "$missing" -ne 0 ]; then
+            echo "Refusing to build a release without a Developer ID certificate and notarization credentials."
+            exit 1
+          fi
+
       - name: Generate changelog
         run: |
           python3 Kit/scripts/changelog.py > CHANGELOG.md
+          git remote add upstream https://github.com/exelban/stats.git
+          git fetch --no-tags upstream master
+          echo "" >> CHANGELOG.md
+          echo "Upstream: exelban/stats $(git merge-base HEAD upstream/master)" >> CHANGELOG.md
           cat CHANGELOG.md
 
       - name: Import signing certificate
@@ -41,12 +66,12 @@ jobs:
       - name: Export
         run: |
           xcodebuild -exportArchive -exportOptionsPlist exportOptions.plist -archivePath build/Stats.xcarchive -exportPath build
-          ditto -c -k --keepParent build/Stats.app build/Stats.zip
+          ditto -c -k --keepParent "build/Secure Stats.app" build/SecureStats.zip
 
       - name: Notarize
         if: inputs.dry_run != true
         run: |
-          xcrun notarytool submit build/Stats.zip \
+          xcrun notarytool submit build/SecureStats.zip \
             --apple-id "${{ secrets.APPLE_ID }}" \
             --team-id "${{ secrets.APPLE_TEAM_ID }}" \
             --password "${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}" \
@@ -54,42 +79,42 @@ jobs:
 
       - name: Staple
         if: inputs.dry_run != true
-        run: xcrun stapler staple build/Stats.app
+        run: xcrun stapler staple "build/Secure Stats.app"
 
       - name: Verify signatures
         run: |
-          codesign --verify --strict "build/Stats.app/Contents/PlugIns/WidgetsExtension.appex"
-          app=$(/usr/libexec/PlistBuddy -c "Print CFBundleShortVersionString" build/Stats.app/Contents/Info.plist)
-          widget=$(/usr/libexec/PlistBuddy -c "Print CFBundleShortVersionString" "build/Stats.app/Contents/PlugIns/WidgetsExtension.appex/Contents/Info.plist")
+          codesign --verify --strict "build/Secure Stats.app/Contents/PlugIns/WidgetsExtension.appex"
+          app=$(/usr/libexec/PlistBuddy -c "Print CFBundleShortVersionString" "build/Secure Stats.app/Contents/Info.plist")
+          widget=$(/usr/libexec/PlistBuddy -c "Print CFBundleShortVersionString" "build/Secure Stats.app/Contents/PlugIns/WidgetsExtension.appex/Contents/Info.plist")
           echo "app: $app, widget: $widget"
           [ "$app" = "$widget" ] || { echo "ERROR: widget version does not match app version"; exit 1; }
 
       - name: Verify gatekeeper
         if: inputs.dry_run != true
-        run: spctl -a -t exec -vvv build/Stats.app
+        run: spctl -a -t exec -vvv "build/Secure Stats.app"
 
       - name: DMG
         run: |
           git clone --depth 1 https://github.com/create-dmg/create-dmg
           ./create-dmg/create-dmg \
-            --volname Stats \
+            --volname "Secure Stats" \
             --background "./Stats/Supporting Files/background.png" \
             --window-pos 200 120 \
             --window-size 500 320 \
             --icon-size 80 \
-            --icon "Stats.app" 125 175 \
-            --hide-extension "Stats.app" \
+            --icon "Secure Stats.app" 125 175 \
+            --hide-extension "Secure Stats.app" \
             --app-drop-link 375 175 \
             --no-internet-enable \
-            build/Stats.dmg build/Stats.app
+            "build/Secure Stats.dmg" "build/Secure Stats.app"
           rm -rf ./create-dmg
 
       - name: Upload DMG
         if: inputs.dry_run == true
         uses: actions/upload-artifact@v4
         with:
-          name: Stats.dmg
-          path: build/Stats.dmg
+          name: Secure Stats.dmg
+          path: build/Secure Stats.dmg
 
       - name: Publish
         if: inputs.dry_run != true
@@ -99,7 +124,7 @@ jobs:
           if gh release view "$GITHUB_REF_NAME" > /dev/null 2>&1; then
             echo "Release $GITHUB_REF_NAME already exists; skipping publishing"
           else
-            gh release create "$GITHUB_REF_NAME" build/Stats.dmg \
+            gh release create "$GITHUB_REF_NAME" "build/Secure Stats.dmg" \
               --verify-tag \
               --title "$GITHUB_REF_NAME" \
               --notes-file CHANGELOG.md

@@ -1110,8 +1110,8 @@ public enum SMCHelperInstallState {
 public class SMCHelper {
     public static let shared = SMCHelper()
     
-    private let id: String = "eu.exelban.Stats.SMC.Helper"
-    private let plistName: String = "eu.exelban.Stats.SMC.Helper.plist"
+    private let id: String = "com.aleckinnear.securestats.SMC.Helper"
+    private let plistName: String = "com.aleckinnear.securestats.SMC.Helper.plist"
     
     public var isInstalled: Bool {
         if #available(macOS 13, *) {
@@ -1176,7 +1176,7 @@ public class SMCHelper {
             }
         }
         
-        let helperURL = Bundle.main.bundleURL.appendingPathComponent("Contents/Library/LaunchServices/eu.exelban.Stats.SMC.Helper")
+        let helperURL = Bundle.main.bundleURL.appendingPathComponent("Contents/Library/LaunchServices/com.aleckinnear.securestats.SMC.Helper")
         guard let helperBundleInfo = CFBundleCopyInfoDictionaryForURL(helperURL as CFURL) as? [String: Any],
               let helperVersion = helperBundleInfo["CFBundleShortVersionString"] as? String else {
             print("SMC helper update check skipped: cannot read bundled helper version at \(helperURL.path)")
@@ -1302,7 +1302,7 @@ public class SMCHelper {
         }
         
         var error: Unmanaged<CFError>?
-        if SMJobBless(kSMDomainSystemLaunchd, "eu.exelban.Stats.SMC.Helper" as CFString, authRef, &error) == false {
+        if SMJobBless(kSMDomainSystemLaunchd, "com.aleckinnear.securestats.SMC.Helper" as CFString, authRef, &error) == false {
             let blessError = error!.takeRetainedValue() as Error
             print("Error while installing the Helper: \(blessError.localizedDescription)")
             completion(.failed)
@@ -1318,7 +1318,7 @@ public class SMCHelper {
             return self.connection
         }
         
-        let connection = NSXPCConnection(machServiceName: "eu.exelban.Stats.SMC.Helper", options: .privileged)
+        let connection = NSXPCConnection(machServiceName: "com.aleckinnear.securestats.SMC.Helper", options: .privileged)
         connection.exportedObject = self
         connection.remoteObjectInterface = NSXPCInterface(with: HelperProtocol.self)
         connection.invalidationHandler = { [weak self] in
@@ -2194,7 +2194,7 @@ public class GPUStressTest {
 public final class SystemWidgetUpdates {
     public static let shared = SystemWidgetUpdates()
     
-    private let queue = DispatchQueue(label: "eu.exelban.Stats.SystemWidgetUpdates", qos: .utility)
+    private let queue = DispatchQueue(label: "com.aleckinnear.securestats.SystemWidgetUpdates", qos: .utility)
     private let encoder = JSONEncoder()
     private let interval: TimeInterval
     private var pending: [String: () -> [String]] = [:]

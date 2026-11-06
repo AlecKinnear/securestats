@@ -3,17 +3,17 @@
 <plist version="1.0">
 <dict>
 	<key>Label</key>
-	<string>eu.exelban.Stats.SMC.Helper</string>
+	<string>com.aleckinnear.securestats.SMC.Helper</string>
 	<key>BundleProgram</key>
-	<string>Contents/Library/LaunchServices/eu.exelban.Stats.SMC.Helper</string>
+	<string>Contents/Library/LaunchServices/com.aleckinnear.securestats.SMC.Helper</string>
 	<key>MachServices</key>
 	<dict>
-		<key>eu.exelban.Stats.SMC.Helper</key>
+		<key>com.aleckinnear.securestats.SMC.Helper</key>
 		<true/>
 	</dict>
 	<key>AssociatedBundleIdentifiers</key>
 	<array>
-		<string>eu.exelban.Stats</string>
+		<string>com.aleckinnear.securestats</string>
 	</array>
 </dict>
 </plist>

@@ -86,21 +86,9 @@ public class Updater {
             self.lastCheckTS = Int(Date().timeIntervalSince1970)
         }
         
-        self.fetchRelease(uri: self.server) { (result, err) in
+        self.fetchRelease(uri: self.github) { (result, err) in
             guard let result = result, err == nil else {
-                self.fetchRelease(uri: self.github) { (result, err) in
-                    guard let result = result, err == nil else {
-                        completion(nil, err)
-                        return
-                    }
-                    
-                    completion(version_s(
-                        current: self.currentVersion,
-                        latest: result.tag,
-                        newest: isNewestVersion(currentVersion: self.currentVersion, latestVersion: result.tag),
-                        url: result.url
-                    ), nil)
-                }
+                completion(nil, err)
                 return
             }
             

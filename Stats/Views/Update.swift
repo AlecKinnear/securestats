@@ -30,7 +30,7 @@ internal class UpdateWindow: NSWindow, NSWindowDelegate {
             defer: true
         )
         
-        self.title = "Stats"
+        self.title = "Secure Stats"
         self.contentViewController = self.viewController
         self.titlebarAppearsTransparent = true
         self.isReleasedWhenClosed = false
@@ -294,7 +294,7 @@ private class UpdateView: NSView {
     
     @objc private func changelog() {
         if let version = self.version {
-            NSWorkspace.shared.open(URL(string: "https://github.com/exelban/stats/releases/tag/\(version.latest)")!)
+            NSWorkspace.shared.open(URL(string: "https://github.com/AlecKinnear/securestats/releases/tag/\(version.latest)")!)
         }
     }
     

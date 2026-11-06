@@ -999,7 +999,7 @@ class MQTTManager: NSObject {
     private let log: NextLog
     private var packetIdentifier: UInt16 = 1
     
-    private let stateQueue = DispatchQueue(label: "eu.exelban.Stats.Remote.MQTT")
+    private let stateQueue = DispatchQueue(label: "com.aleckinnear.securestats.Remote.MQTT")
     private static let stateQueueKey = DispatchSpecificKey<Void>()
     
     private lazy var metrics = RemoteMetricBatch(
@@ -1486,7 +1486,7 @@ extension MQTTManager: URLSessionWebSocketDelegate {
 // MARK: - Keychain
 
 enum RemoteKeychain {
-    private static let service: String = (Bundle.main.bundleIdentifier ?? "eu.exelban.Stats") + ".remote"
+    private static let service: String = (Bundle.main.bundleIdentifier ?? "com.aleckinnear.securestats") + ".remote"
     
     static func read(_ key: String) -> String? {
         let query: [String: Any] = [

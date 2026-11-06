@@ -1,21 +1,21 @@
 #!/bin/bash
 set -eu
 
-BUNDLE_ID="eu.exelban.Stats"
+BUNDLE_ID="com.aleckinnear.securestats"
 KEYCHAIN_SERVICE="${BUNDLE_ID}.remote"
 AUTH_HOST="https://oauth.system-stats.com"
 API_HOST="https://api.system-stats.com"
 APP_HOST="https://app.system-stats.com"
 CLIENT_ID="stats"
-REPO="exelban/stats"
-AGENT_LABEL="eu.exelban.Stats"
+REPO="AlecKinnear/securestats"
+AGENT_LABEL="com.aleckinnear.securestats"
 UID_NUM="$(id -u)"
 
 VERSION="latest"
 ENABLE_CONTROL="false"
 ENABLE_UPDATE="false"
 REAUTH=0
-APP_DST="/Applications/Stats.app"
+APP_DST="/Applications/Secure Stats.app"
 CUSTOM_APP_DST=0
 
 usage() {
@@ -26,7 +26,7 @@ usage() {
     echo ""
     echo "Options:"
     echo "  -v, --version TAG    Install a specific release tag (default: latest)"
-    echo "  -a, --app PATH       Target location of Stats.app (default: /Applications/Stats.app)"
+    echo "  -a, --app PATH       Target location of Secure Stats.app (default: /Applications/Secure Stats.app)"
     echo "  -c, --control        Allow remote control commands"
     echo "  -u, --update         Allow remote update trigger"
     echo "  -r, --reauth         Force a fresh login even if tokens already exist"
@@ -87,19 +87,19 @@ trap 'INSTALL_EXIT_STATUS=$?; cleanup; exit "$INSTALL_EXIT_STATUS"' EXIT
 
 if [[ -d "$APP_DST" ]]; then
     APP="$APP_DST"
-elif [[ "$CUSTOM_APP_DST" -eq 0 && -d "$HOME/Applications/Stats.app" ]]; then
-    APP="$HOME/Applications/Stats.app"
+elif [[ "$CUSTOM_APP_DST" -eq 0 && -d "$HOME/Applications/Secure Stats.app" ]]; then
+    APP="$HOME/Applications/Secure Stats.app"
 else
     if [[ "$VERSION" == "latest" ]]; then
-        URL="https://github.com/$REPO/releases/latest/download/Stats.dmg"
+        URL="https://github.com/$REPO/releases/latest/download/Secure%20Stats.dmg"
     else
-        URL="https://github.com/$REPO/releases/download/v$VERSION/Stats.dmg"
+        URL="https://github.com/$REPO/releases/download/v$VERSION/Secure%20Stats.dmg"
     fi
-    echo "Downloading Stats ($VERSION)..."
-    /usr/bin/curl -fL --retry 3 -o "$TMP/Stats.dmg" "$URL"
+    echo "Downloading Secure Stats ($VERSION)..."
+    /usr/bin/curl -fL --retry 3 -o "$TMP/Secure Stats.dmg" "$URL"
     MOUNT="$TMP/mount"
     /bin/mkdir -p "$MOUNT"
-    /usr/bin/hdiutil attach -nobrowse -noautoopen -quiet -readonly -mountpoint "$MOUNT" "$TMP/Stats.dmg"
+    /usr/bin/hdiutil attach -nobrowse -noautoopen -quiet -readonly -mountpoint "$MOUNT" "$TMP/Secure Stats.dmg"
 
     DEST="$(dirname "$APP_DST")"
     INSTALL_PARENT="$DEST"
@@ -112,7 +112,7 @@ else
             INSTALL_CMD=(sudo)
         elif [[ "$CUSTOM_APP_DST" -eq 0 ]]; then
             DEST="$HOME/Applications"
-            APP_DST="$DEST/Stats.app"
+            APP_DST="$DEST/Secure Stats.app"
             echo "Installing to $DEST (no admin privileges)..."
         else
             echo "Cannot write to $DEST without admin privileges."
@@ -121,15 +121,15 @@ else
     fi
     "${INSTALL_CMD[@]}" /bin/mkdir -p "$DEST"
     if command -v ditto >/dev/null 2>&1; then
-        "${INSTALL_CMD[@]}" ditto "$MOUNT/Stats.app" "$APP_DST"
+        "${INSTALL_CMD[@]}" ditto "$MOUNT/Secure Stats.app" "$APP_DST"
     else
-        "${INSTALL_CMD[@]}" cp -Rf "$MOUNT/Stats.app" "$APP_DST"
+        "${INSTALL_CMD[@]}" cp -Rf "$MOUNT/Secure Stats.app" "$APP_DST"
     fi
     /usr/bin/hdiutil detach "$MOUNT" >/dev/null 2>&1
     MOUNT=""
     "${INSTALL_CMD[@]}" /usr/bin/xattr -dr com.apple.quarantine "$APP_DST" 2>/dev/null || true
     APP="$APP_DST"
-    echo "Installed Stats to $APP"
+    echo "Installed Secure Stats to $APP"
 fi
 
 BIN="$APP/Contents/MacOS/Stats"

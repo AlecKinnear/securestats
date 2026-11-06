@@ -19,7 +19,7 @@ public extension NSToolbarItem.Identifier {
 
 class SettingsWindow: NSWindow, NSWindowDelegate, NSToolbarDelegate {
     private static let size: CGSize = CGSize(width: 720, height: 480)
-    private static let frameAutosaveName = "eu.exelban.Stats.Settings.WindowFrame"
+    private static let frameAutosaveName = "com.aleckinnear.securestats.Settings.WindowFrame"
     
     internal var onClose: (() -> Void)?
     
@@ -65,7 +65,7 @@ class SettingsWindow: NSWindow, NSWindowDelegate, NSToolbarDelegate {
         
         contentItem.minimumThickness = 540
         
-        let newToolbar = NSToolbar(identifier: "eu.exelban.Stats.Settings.Toolbar")
+        let newToolbar = NSToolbar(identifier: "com.aleckinnear.securestats.Settings.Toolbar")
         newToolbar.allowsUserCustomization = false
         newToolbar.autosavesConfiguration = true
         newToolbar.displayMode = .default
@@ -474,7 +474,7 @@ private class SidebarView: NSStackView {
     }
     
     @objc private func reportBug() {
-        NSWorkspace.shared.open(URL(string: "https://github.com/exelban/stats/issues/new?template=bug_report.yml")!)
+        NSWorkspace.shared.open(URL(string: "https://github.com/AlecKinnear/securestats/issues/new?template=bug_report.yml")!)
     }
     
     @objc private func donate(_ sender: NSButton) {

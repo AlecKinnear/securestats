@@ -63,7 +63,7 @@ internal class Popup: PopupWrapper {
     private var publicIPv6Field: ValueField? = nil
     private var publicIPv4View: NSView? = nil
     private var publicIPv6View: NSView? = nil
-    private var publicIPState: Bool = true
+    private var publicIPState: Bool = false
     private var emojiCCState: Bool = true
     
     private var processesView: NSView? = nil

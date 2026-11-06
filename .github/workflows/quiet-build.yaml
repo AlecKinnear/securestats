@@ -1,0 +1,35 @@
+name: quiet-build
+
+# Builds an ad-hoc signed Stats.app from this branch and attaches it as a
+# downloadable artifact. No Apple developer account or secrets needed.
+on:
+  push:
+    branches:
+      - quiet-network
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Build (unsigned)
+        run: |
+          xcodebuild -scheme Stats -destination 'platform=macOS' -configuration Release \
+            archive -archivePath build/Stats.xcarchive CODE_SIGNING_ALLOWED=NO
+
+      - name: Ad-hoc sign and package
+        run: |
+          APP=build/Stats.xcarchive/Products/Applications/Stats.app
+          codesign --force --deep --sign - "$APP"
+          codesign --verify --deep --strict "$APP"
+          ditto -c -k --keepParent "$APP" build/Stats-quiet.zip
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Stats-quiet
+          path: build/Stats-quiet.zip

@@ -179,7 +179,7 @@ internal class UsageReader: Reader<Network_Usage>, CWEventDelegate, CLLocationMa
         get { Store.shared.bool(key: "Network_VPNMode", defaultValue: false) }
     }
     private var publicIPState: Bool {
-        get { Store.shared.bool(key: "Network_publicIP", defaultValue: true) }
+        get { Store.shared.bool(key: "Network_publicIP", defaultValue: false) }
     }
     
     private var usageResetInterval: AppUpdateInterval? {
@@ -964,7 +964,7 @@ internal class ConnectivityReader: Reader<Network_Connectivity> {
     private var fingerprint: UUID = UUID()
     
     private var ICMPHost: String {
-        Store.shared.string(key: "Network_ICMPHost", defaultValue: "1.1.1.1")
+        Store.shared.string(key: "Network_ICMPHost", defaultValue: "")
     }
     private var HTTPHost: String {
         Store.shared.string(key: "Network_HTTPHost", defaultValue: "https://google.com")
@@ -1053,7 +1053,15 @@ internal class ConnectivityReader: Reader<Network_Connectivity> {
     
     override func setup() {
         self.setInterval(Store.shared.int(key: "Network_updateICMPInterval", defaultValue: 1))
-        self.prepare()
+        // quiet-network: the ICMP socket is opened lazily by icmpCheck() once the
+        // Network module is enabled and the reader runs, instead of at app launch.
+    }
+    
+    override func stop() {
+        super.stop()
+        // quiet-network: release the ICMP socket when the module is disabled.
+        self.closeConn()
+        self.isPinging = false
     }
     
     deinit {

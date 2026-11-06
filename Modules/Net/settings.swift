@@ -65,11 +65,11 @@ internal class Settings: NSStackView, Settings_v, NSTextFieldDelegate {
     private var widgetActivationThresholdState: Bool = false
     private var widgetActivationThreshold: Int = 0
     private var widgetActivationThresholdSize: SizeUnit = .MB
-    private var connectivityICMPHost: String = "1.1.1.1"
+    private var connectivityICMPHost: String = ""
     private var connectivityHTTPHost: String = "https://google.com"
     private var updateConnectivityIntervalValue: Int = 1
     private var connectivityMode: ConnectivityReader.ConnectivityMode = .icmp
-    private var publicIPState: Bool = true
+    private var publicIPState: Bool = false
     private var publicIPRefreshInterval: String = "never"
     private var baseValue: String = "byte"
     private var speedUnitValue: String = NetworkSpeedUnitAuto
